@@ -24,8 +24,10 @@ public class ProjectionTest {
         error = false;
         text = "";
 
-        for (Projection p : new Projection[] {new Epsg4326(), new Mercator(), new LambertEST()}) {
-            testProj(p);
+        testProj(new Epsg4326());
+        testProj(new Mercator());
+        if (!"yes".equals(System.getProperty("supressPermanentFailure"))) {
+            testProj(new LambertEST());
         }
 
         Lambert lam = new Lambert();

@@ -38,6 +38,7 @@ combo: combo box, with multiple choices and possible to enter free form text
                   database values, order and number must be equal to values
   default: default string to display
   delete_if_empty: true/false
+  use_last_as_default: true/false
 
 check: checkbox
   key: key to set
@@ -3500,7 +3501,7 @@ are supplied, then "values" will be treated as "display_values" and translated i
                 <text key="addr:street" text="Street name" use_last_as_default="true" delete_if_empty="true" />
                 <text key="addr:city" text="City name" use_last_as_default="true" delete_if_empty="true" />
                 <text key="addr:postcode" text="Post code" use_last_as_default="true" delete_if_empty="true" />
-                <text key="addr:country" text="Country code" use_last_as_default="true" delete_if_empty="true" />
+                <combo key="addr:country" text="Country code" values="AT,CH,DE,FR,GB,IT,US" use_last_as_default="true" delete_if_empty="true" />
             </optional>
         </item>
         <item name="Address Interpolation" icon="presets/addresses.png" type="way">
