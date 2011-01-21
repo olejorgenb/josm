@@ -39,7 +39,7 @@ import java.io.InputStream;
  * </p>
  * 
  * @author Apache Software Foundation 
- * @version $Id: Base64InputStream.java 928107 2010-03-27 00:02:22Z sebb $
+ * @version $Id: Base64InputStream.java 1061974 2011-01-21 19:19:51Z julius $
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @since 1.4
  */
@@ -145,21 +145,41 @@ public class Base64InputStream extends FilterInputStream {
         } else if (len == 0) {
             return 0;
         } else {
-            if (!base64.hasData()) {
-                byte[] buf = new byte[doEncode ? 4096 : 8192];
-                int c = in.read(buf);
-                // A little optimization to avoid System.arraycopy()
-                // when possible.
-                if (c > 0 && b.length == len) {
-                    base64.setInitialBuffer(b, offset, len);
+            int readLen = 0;
+            /*
+             Rationale for while-loop on (readLen == 0):
+             -----
+             Base64.readResults() usually returns > 0 or EOF (-1).  In the
+             rare case where it returns 0, we just keep trying.
+
+             This is essentially an undocumented contract for InputStream
+             implementors that want their code to work properly with
+             java.io.InputStreamReader, since the latter hates it when
+             InputStream.read(byte[]) returns a zero.  Unfortunately our
+             readResults() call must return 0 if a large amount of the data
+             being decoded was non-base64, so this while-loop enables proper
+             interop with InputStreamReader for that scenario.
+             -----
+             This is a fix for CODEC-101
+            */
+            while (readLen == 0) {
+                if (!base64.hasData()) {
+                    byte[] buf = new byte[doEncode ? 4096 : 8192];
+                    int c = in.read(buf);
+                    // A little optimization to avoid System.arraycopy()
+                    // when possible.
+                    if (c > 0 && b.length == len) {
+                        base64.setInitialBuffer(b, offset, len);
+                    }
+                    if (doEncode) {
+                        base64.encode(buf, 0, c);
+                    } else {
+                        base64.decode(buf, 0, c);
+                    }
                 }
-                if (doEncode) {
-                    base64.encode(buf, 0, c);
-                } else {
-                    base64.decode(buf, 0, c);
-                }
+                readLen = base64.readResults(b, offset, len);
             }
-            return base64.readResults(b, offset, len);
+            return readLen;
         }
     }
 
