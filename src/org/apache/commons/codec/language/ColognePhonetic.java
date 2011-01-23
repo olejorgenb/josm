@@ -188,8 +188,8 @@ import org.apache.commons.codec.StringEncoder;
  *          {@linkplain StringEncoder}—for the interface implemented by this
  *          class</li> </ul>
  * 
- * @author Falk Meyer, IT2media
- * @version beta 2010/9/13
+ * @author Apache Software Foundation
+ * @version 1.5
  */
 
 public class ColognePhonetic implements StringEncoder {
