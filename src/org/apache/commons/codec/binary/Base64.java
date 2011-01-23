@@ -48,7 +48,7 @@ import org.apache.commons.codec.EncoderException;
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @author Apache Software Foundation
  * @since 1.0
- * @version $Id: Base64.java 950267 2010-06-01 21:52:33Z julius $
+ * @version $Id: Base64.java 1062330 2011-01-23 05:52:42Z julius $
  */
 public class Base64 implements BinaryEncoder, BinaryDecoder {
     private static final int DEFAULT_BUFFER_RESIZE_FACTOR = 2;
@@ -667,7 +667,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
      * @since 1.4
      */    
     public static String encodeBase64String(byte[] binaryData) {
-        return StringUtils.newStringUtf8(encodeBase64(binaryData, true));
+        return StringUtils.newStringUtf8(encodeBase64(binaryData, false));
     }
     
     /**
