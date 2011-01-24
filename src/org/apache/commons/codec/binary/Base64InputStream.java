@@ -39,7 +39,7 @@ import java.io.InputStream;
  * </p>
  * 
  * @author Apache Software Foundation 
- * @version $Id: Base64InputStream.java 1061974 2011-01-21 19:19:51Z julius $
+ * @version $Id: Base64InputStream.java 1062592 2011-01-24 00:46:09Z ggregory $
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @since 1.4
  */
@@ -166,11 +166,6 @@ public class Base64InputStream extends FilterInputStream {
                 if (!base64.hasData()) {
                     byte[] buf = new byte[doEncode ? 4096 : 8192];
                     int c = in.read(buf);
-                    // A little optimization to avoid System.arraycopy()
-                    // when possible.
-                    if (c > 0 && b.length == len) {
-                        base64.setInitialBuffer(b, offset, len);
-                    }
                     if (doEncode) {
                         base64.encode(buf, 0, c);
                     } else {
