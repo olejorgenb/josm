@@ -48,7 +48,7 @@ import org.apache.commons.codec.binary.StringUtils;
  * 
  * @author Apache Software Foundation
  * @since 1.2
- * @version $Id: URLCodec.java 798416 2009-07-28 06:35:58Z ggregory $
+ * @version $Id: URLCodec.java 1062599 2011-01-24 01:06:33Z ggregory $
  */
 public class URLCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, StringDecoder {
     
@@ -64,9 +64,9 @@ public class URLCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, St
     protected String charset;
     
     /**
-     * Consider this field final. The next major release may break compatibility and make this field be final.
+     * Release 1.5 made this field final.
      */
-    protected static byte ESCAPE_CHAR = '%';
+    protected static final byte ESCAPE_CHAR = '%';
     /**
      * BitSet of www-form-url safe characters.
      */
