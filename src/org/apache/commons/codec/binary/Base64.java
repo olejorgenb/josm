@@ -48,7 +48,7 @@ import org.apache.commons.codec.EncoderException;
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @author Apache Software Foundation
  * @since 1.0
- * @version $Id: Base64.java 1063096 2011-01-25 01:28:11Z julius $
+ * @version $Id: Base64.java 1063100 2011-01-25 01:53:47Z ggregory $
  */
 public class Base64 implements BinaryEncoder, BinaryDecoder {
     private static final int DEFAULT_BUFFER_RESIZE_FACTOR = 2;
@@ -590,6 +590,20 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
     }
 
     /**
+     * Tests a given String to see if it contains only valid characters within the Base64 alphabet. Currently the
+     * method treats whitespace as valid.
+     * 
+     * @param base64
+     *            String to test
+     * @return <code>true</code> if all characters in the String are valid characters in the Base64 alphabet or if
+     *         the String is empty; <code>false</code>, otherwise
+     *  @since 1.5
+     */
+    public static boolean isBase64(String base64) {
+        return isArrayByteBase64(StringUtils.getBytesUtf8(base64));
+    }
+
+    /**
      * Tests a given byte array to see if it contains only valid characters within the Base64 alphabet. Currently the
      * method treats whitespace as valid.
      * 
@@ -605,19 +619,6 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
             }
         }
         return true;
-    }
-
-    /**
-     * Tests a given String to see if it contains only valid characters within the Base64 alphabet. Currently the
-     * method treats whitespace as valid.
-     * 
-     * @param base64
-     *            String of (presumably) base64 characters to test
-     * @return <code>true</code> if all characters in the String are valid characters in the Base64 alphabet or if
-     *         the String is empty; false, otherwise
-     */
-    public static boolean isStringBase64(String base64) {
-        return isArrayByteBase64(StringUtils.getBytesUtf8(base64));
     }
     
     /**
