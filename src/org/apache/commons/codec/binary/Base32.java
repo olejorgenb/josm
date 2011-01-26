@@ -39,9 +39,9 @@ package org.apache.commons.codec.binary;
  * @see <a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * 
  * @since 1.5
- * @version $Revision: 1063759 $
+ * @version $Revision: 1063784 $
  */
-public class Base32 extends BasedCodec {
+public class Base32 extends BaseNCodec {
 
     /**
      * BASE32 characters are 5 bits in length. 

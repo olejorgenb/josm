@@ -32,11 +32,11 @@ import java.io.InputStream;
  * character encodings which are compatible with the lower 127 ASCII chart (ISO-8859-1, Windows-1252, UTF-8, etc).
  * </p>
  * 
- * @version $Revision: 1063760 $
+ * @version $Revision: 1063784 $
  * @see <a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * @since 1.5
  */
-public class Base32InputStream extends BasedCodecInputStream {
+public class Base32InputStream extends BaseNCodecInputStream {
 
     /**
      * Creates a Base32InputStream such that all data read is Base32-decoded from the original provided InputStream.
