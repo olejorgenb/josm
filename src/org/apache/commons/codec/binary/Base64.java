@@ -48,7 +48,7 @@ import org.apache.commons.codec.EncoderException;
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @author Apache Software Foundation
  * @since 1.0
- * @version $Id: Base64.java 1063649 2011-01-26 09:17:06Z sebb $
+ * @version $Id: Base64.java 1063757 2011-01-26 15:20:03Z sebb $
  */
 public class Base64 implements BinaryEncoder, BinaryDecoder {
     private static final int DEFAULT_BUFFER_RESIZE_FACTOR = 2;
@@ -641,7 +641,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
     }
     
     /**
-     * Tests a given byte array to see if it contains only valid characters within the Base64 alphabet.
+     * Tests a given byte array to see if it contains any characters fromn the Base64 alphabet.
      * 
      * @param arrayOctet
      *            byte array to test
