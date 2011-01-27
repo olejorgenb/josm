@@ -48,7 +48,7 @@ import org.apache.commons.codec.EncoderException;
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @author Apache Software Foundation
  * @since 1.0
- * @version $Id: Base64.java 1063757 2011-01-26 15:20:03Z sebb $
+ * @version $Id: Base64.java 1063922 2011-01-26 23:40:25Z sebb $
  */
 public class Base64 implements BinaryEncoder, BinaryDecoder {
     private static final int DEFAULT_BUFFER_RESIZE_FACTOR = 2;
@@ -824,7 +824,7 @@ public class Base64 implements BinaryEncoder, BinaryDecoder {
             return binaryData;
         }
 
-        long len = getEncodeLength(binaryData, MIME_CHUNK_SIZE, CHUNK_SEPARATOR);
+        long len = getEncodeLength(binaryData, isChunked ? MIME_CHUNK_SIZE : 0, CHUNK_SEPARATOR);
         if (len > maxResultSize) {
             throw new IllegalArgumentException("Input array too big, the output array would be bigger (" +
                 len +
