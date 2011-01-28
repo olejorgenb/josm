@@ -39,7 +39,7 @@ import java.io.OutputStream;
  * </p>
  * 
  * @author Apache Software Foundation
- * @version $Id: Base64OutputStream.java 928107 2010-03-27 00:02:22Z sebb $
+ * @version $Id: Base64OutputStream.java 1064420 2011-01-28 01:51:36Z sebb $
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @since 1.4
  */
@@ -155,7 +155,7 @@ public class Base64OutputStream extends FilterOutputStream {
      *             if an I/O error occurs.
      */
     private void flush(boolean propogate) throws IOException {
-        int avail = base64.avail();
+        int avail = base64.available();
         if (avail > 0) {
             byte[] buf = new byte[avail];
             int c = base64.readResults(buf, 0, avail);
