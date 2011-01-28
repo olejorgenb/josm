@@ -32,7 +32,7 @@ import org.apache.commons.codec.StringEncoder;
  * </ul>
  * 
  * @author Apache Software Foundation
- * @version $Id: DoubleMetaphone.java 800153 2009-08-02 22:45:30Z ggregory $
+ * @version $Id: DoubleMetaphone.java 1064462 2011-01-28 05:23:57Z ggregory $
  */
 public class DoubleMetaphone implements StringEncoder {
 
@@ -56,7 +56,7 @@ public class DoubleMetaphone implements StringEncoder {
     /**
      * Maximum length of an encoding, default is 4
      */
-    protected int maxCodeLen = 4;
+    private int maxCodeLen = 4;
 
     /**
      * Creates an instance of this DoubleMetaphone encoder
