@@ -36,7 +36,7 @@ package org.apache.commons.codec.binary;
  * @see <a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * 
  * @since 1.5
- * @version $Revision: 1064265 $
+ * @version $Revision: 1064407 $
  */
 public class Base32 extends BaseNCodec {
 
@@ -141,6 +141,12 @@ public class Base32 extends BaseNCodec {
      * <code>encodeSize = {@link BYTES_PER_ENCODED_BLOCK} + lineSeparator.length;</code>
      */
     private final int encodeSize;
+
+    /**
+     * Place holder for the bytes we're dealing with for our based logic. 
+     * Bitwise operations store and extract the encoding or decoding from this variable.
+     */
+    private long bitWorkArea;
 
     /**
      * Creates a Base32 codec used for decoding and encoding.
@@ -281,10 +287,11 @@ public class Base32 extends BaseNCodec {
         // encoding.
         if (inAvail < 0) {
             eof = true;
-            if (0 == modulus) {
-                return; // no leftovers to process
+            if (0 == modulus && lineLength == 0) {
+                return; // no leftovers to process and not using chunking
             }
             ensureBufferSize(encodeSize);
+            int savedPos = pos;
             switch (modulus) { // % 5
                 case 1 : // Only 1 octet; take top 5 bits then remainder
                     buffer[pos++] = encodeTable[(int)(bitWorkArea >> 3) & MASK_5BITS]; // 8-1*5 = 3
@@ -328,14 +335,16 @@ public class Base32 extends BaseNCodec {
                     buffer[pos++] = PAD;
                     break;
             }
-            if (lineLength > 0){ // add chunk separator if required
+            currentLinePos += pos - savedPos; // keep track of current line position
+            // if currentPos == 0 we are at the start of a line, so don't add CRLF
+            if (lineLength > 0 && currentLinePos > 0){ // add chunk separator if required
                 System.arraycopy(lineSeparator, 0, buffer, pos, lineSeparator.length);
                 pos += lineSeparator.length;
             }            
         } else {
             for (int i = 0; i < inAvail; i++) {
                 ensureBufferSize(encodeSize);
-                modulus = (++modulus) % BITS_PER_ENCODED_BYTE;
+                modulus = (++modulus) % BYTES_PER_UNENCODED_BLOCK;
                 int b = in[inPos++];
                 if (b < 0) {
                     b += 256;
