@@ -36,7 +36,7 @@ package org.apache.commons.codec.binary;
  * @see <a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * 
  * @since 1.5
- * @version $Revision: 1064418 $
+ * @version $Revision: 1064428 $
  */
 public class Base32 extends BaseNCodec {
 
@@ -344,7 +344,7 @@ public class Base32 extends BaseNCodec {
         } else {
             for (int i = 0; i < inAvail; i++) {
                 ensureBufferSize(encodeSize);
-                modulus = (++modulus) % BYTES_PER_UNENCODED_BLOCK;
+                modulus = (modulus+1) % BYTES_PER_UNENCODED_BLOCK;
                 int b = in[inPos++];
                 if (b < 0) {
                     b += 256;
@@ -409,7 +409,7 @@ public class Base32 extends BaseNCodec {
                 if (b >= 0 && b < this.decodeTable.length) {
                     int result = this.decodeTable[b];
                     if (result >= 0) {
-                        modulus = (++modulus) % BYTES_PER_ENCODED_BLOCK;
+                        modulus = (modulus+1) % BYTES_PER_ENCODED_BLOCK;
                         bitWorkArea = (bitWorkArea << BITS_PER_ENCODED_BYTE) + result; // collect decoded bytes
                         if (modulus == 0) { // we can output the 5 bytes
                             buffer[pos++] = (byte) ((bitWorkArea >> 32) & MASK_8BITS);
