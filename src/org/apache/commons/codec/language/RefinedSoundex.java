@@ -26,7 +26,7 @@ import org.apache.commons.codec.StringEncoder;
  * <CITE>Margaret Odell</CITE> and <CITE>Robert Russell</CITE>.
  * 
  * @author Apache Software Foundation
- * @version $Id: RefinedSoundex.java 1064307 2011-01-27 21:11:47Z ggregory $
+ * @version $Id: RefinedSoundex.java 1064455 2011-01-28 04:40:27Z ggregory $
  */
 public class RefinedSoundex implements StringEncoder {
 
@@ -40,7 +40,7 @@ public class RefinedSoundex implements StringEncoder {
      * mappings have been altered. This implementation contains default
      * mappings for US English.
      */
-    static final char[] US_ENGLISH_MAPPING = US_ENGLISH_MAPPING_STRING.toCharArray();
+    private static final char[] US_ENGLISH_MAPPING = US_ENGLISH_MAPPING_STRING.toCharArray();
 
     /**
      * Every letter of the alphabet is "mapped" to a numerical value. This char
