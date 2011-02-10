@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -296,6 +297,32 @@ public class TaggingPresetPreference implements PreferenceSetting {
             super("taggingpreset.sources",
                   "taggingpreset.enable-defaults",
                   "taggingpreset.sources-list");
+        }
+
+        @Override
+        public List<SourceEntry> get() {
+            List<SourceEntry> ls = new ArrayList<SourceEntry>(super.get());
+            if (removeDeprecated(ls)) {
+                put(ls);
+            }
+            return ls;
+        }
+
+        /**
+         * The internal path of elemstyles.xml has changed, this
+         * can be removed when a few months have passed.
+         */
+        private boolean removeDeprecated(List<SourceEntry> ls) {
+            boolean changed = false;
+            Iterator<SourceEntry> it = ls.iterator();
+            while (it.hasNext()) {
+                SourceEntry se = it.next();
+                if (se.url.equals("resource://data/elemstyles.xml")) {
+                    it.remove();
+                    changed = true;
+                }
+            }
+            return changed;
         }
 
         @Override
