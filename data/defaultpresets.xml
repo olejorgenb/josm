@@ -2174,6 +2174,17 @@ are supplied, then "values" will be treated as "display_values" and translated i
             <combo key="opening_hours" text="Opening Hours" values="24/7,Mo-Fr 08:30-20:00,Tu-Su 08:00-15:00;Sa 08:00-12:00" default="" delete_if_empty="true" />
             <text key="wikipedia" text="Wikipedia" default="" delete_if_empty="true" />
         </item>
+        <item name="Dog Park" icon="presets/dogpark.png" type="node,closedway">
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:leisure=dog_park"
+                  it.href="http://wiki.openstreetmap.org/wiki/IT:Tag:leisure=dog_park" />
+            <label text="Edit Dog Park" />
+            <key key="leisure" value="dog_park" />
+            <text key="name" text="Name" default="" delete_if_empty="true" />
+            <check key="area" text="Area" default="off" delete_if_empty="true" />
+            <combo key="barrier" text="Barrier" values="fence,wall" default="" delete_if_empty="true" />  
+            <combo key="opening_hours" text="Opening Hours" values="24/7,Mo-Fr 08:30-20:00,Tu-Su 08:00-15:00;Sa 08:00-12:00" default="" delete_if_empty="true" />
+            <check key="lit" text="Lit" default="off" delete_if_empty="true" />
+        </item>  
         <item name="Theme Park" icon="presets/theme_park.png" type="node,closedway">
             <label text="Edit Theme Park" />
             <key key="tourism" value="theme_park" />
@@ -2542,10 +2553,20 @@ are supplied, then "values" will be treated as "display_values" and translated i
             <text key="name" text="Name" default="" delete_if_empty="true" />
         </item>
         <item name="Fire Hydrant" icon="presets/fire_hydrant.png" type="node">
-            <link href="http://wiki.openstreetmap.org/wiki/Tag:amenity=fire hydrant"
-                  fi.href="http://wiki.openstreetmap.org/wiki/Fi:Tag:fire hydrant" />
+            <link href="http://wiki.openstreetmap.org/wiki/Tag:emergency=fire_hydrant"
+                  de.href="http://wiki.openstreetmap.org/wiki/DE:Tag:emergency=fire_hydrant" />
             <label text="Edit Fire Hydrant" />
-            <key key="amenity" value="fire_hydrant" />
+            <key key="emergency" value="fire_hydrant" />
+            <combo key="fire_hydrant:type" text="Type" values="underground,pillar,wall,pond" values_context="pipeline" default="pillar" delete_if_empty="true" />
+            <combo key="fire_hydrant:diameter" text="Diameter" values="50,80,100,150,200,250,300,400" default="" delete_if_empty="true" />
+            <space />
+            <text key="name" text="Name" default="" delete_if_empty="true" />
+            <text key="ref" text="Reference" default="" delete_if_empty="true" />
+            <text key="operator" text="Operator" default="" delete_if_empty="true" />
+            <space />
+            <combo key="fire_hydrant:position" text="Position" values="lane,parking_lot,sidewalk,green" default="" delete_if_empty="true" />
+            <combo key="fire_hydrant:pressure" text="Pressure" values="xx l/min,suction" default="" delete_if_empty="true" />
+            <text key="fire_hydrant:count" text="Count" values="" default="" delete_if_empty="true" />
         </item>
     </group> <!-- Facilities -->
   </group>  <!-- Facilities -->
