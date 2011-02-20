@@ -47,7 +47,7 @@ import java.math.BigInteger;
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @author Apache Software Foundation
  * @since 1.0
- * @version $Revision: 1072756 $
+ * @version $Revision: 1072769 $
  */
 public class Base64 extends BaseNCodec {
 
@@ -677,33 +677,6 @@ public class Base64 extends BaseNCodec {
      */
     public static byte[] decodeBase64(byte[] base64Data) {
         return new Base64().decode(base64Data);
-    }
-
-    /**
-     * Discards any whitespace from a base-64 encoded block.
-     * 
-     * @param data
-     *            The base-64 encoded data to discard the whitespace from.
-     * @return The data, less whitespace (see RFC 2045).
-     * @deprecated This method is no longer needed
-     */
-    static byte[] discardWhitespace(byte[] data) {
-        byte groomedData[] = new byte[data.length];
-        int bytesCopied = 0;
-        for (int i = 0; i < data.length; i++) {
-            switch (data[i]) {
-                case ' ' :
-                case '\n' :
-                case '\r' :
-                case '\t' :
-                    break;
-                default :
-                    groomedData[bytesCopied++] = data[i];
-            }
-        }
-        byte packedData[] = new byte[bytesCopied];
-        System.arraycopy(groomedData, 0, packedData, 0, bytesCopied);
-        return packedData;
     }
 
     // Implementation of the Encoder Interface
