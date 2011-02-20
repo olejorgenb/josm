@@ -47,7 +47,7 @@ import java.math.BigInteger;
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
  * @author Apache Software Foundation
  * @since 1.0
- * @version $Revision: 1064797 $
+ * @version $Revision: 1072756 $
  */
 public class Base64 extends BaseNCodec {
 
@@ -777,7 +777,7 @@ public class Base64 extends BaseNCodec {
      * @return <code>true</code> if the value is defined in the the Base32 alphabet <code>false</code> otherwise.
      */
     protected boolean isInAlphabet(byte octet) {
-        return (octet >= 0 && octet < decodeTable.length && decodeTable[octet] != -1);
+        return octet >= 0 && octet < decodeTable.length && decodeTable[octet] != -1;
     }
 
 }

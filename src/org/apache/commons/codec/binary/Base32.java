@@ -40,7 +40,7 @@ package org.apache.commons.codec.binary;
  * @see <a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * 
  * @since 1.5
- * @version $Revision: 1064797 $
+ * @version $Revision: 1072757 $
  */
 public class Base32 extends BaseNCodec {
 
@@ -243,7 +243,7 @@ public class Base32 extends BaseNCodec {
             if (lineSeparator == null) {
                 throw new IllegalArgumentException("lineLength "+lineLength+" > 0, but lineSeparator is null");
             }
-            // Must be done after initialising the tables
+            // Must be done after initializing the tables
             if (containsAlphabetOrPad(lineSeparator)) {
                 String sep = StringUtils.newStringUtf8(lineSeparator);
                 throw new IllegalArgumentException("lineSeparator must not contain Base32 characters: [" + sep + "]");
@@ -466,6 +466,6 @@ public class Base32 extends BaseNCodec {
      * @return <code>true</code> if the value is defined in the the Base32 alphabet <code>false</code> otherwise.
      */
     public boolean isInAlphabet(byte octet) {
-        return (octet >= 0 && octet < decodeTable.length && decodeTable[octet] != -1);
+        return octet >= 0 && octet < decodeTable.length && decodeTable[octet] != -1;
     }
 }

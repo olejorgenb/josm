@@ -32,7 +32,7 @@ import org.apache.commons.codec.StringEncoder;
  * </ul>
  * 
  * @author Apache Software Foundation
- * @version $Id: DoubleMetaphone.java 1064462 2011-01-28 05:23:57Z ggregory $
+ * @version $Id: DoubleMetaphone.java 1072742 2011-02-20 21:39:03Z ggregory $
  */
 public class DoubleMetaphone implements StringEncoder {
 
@@ -102,7 +102,7 @@ public class DoubleMetaphone implements StringEncoder {
             case 'O':
             case 'U':
             case 'Y':
-                index = handleAEIOUY(value, result, index);
+                index = handleAEIOUY(result, index);
                 break;
             case 'B':
                 result.append('P');
@@ -267,7 +267,7 @@ public class DoubleMetaphone implements StringEncoder {
     /**
      * Handles 'A', 'E', 'I', 'O', 'U', and 'Y' cases
      */
-    private int handleAEIOUY(String value, DoubleMetaphoneResult result, int 
+    private int handleAEIOUY(DoubleMetaphoneResult result, int 
                              index) {
         if (index == 0) {
             result.append('A');
