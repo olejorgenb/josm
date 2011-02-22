@@ -159,7 +159,7 @@ import org.apache.commons.codec.StringEncoder;
  * 
  * <li>
  * <h3>Second step:</h3>
- * Removal of all double codes.
+ * Collapse of all multiple consecutive code digits.
  * <h4>Example:</h4>
  * {@code "6005507500206880022" => "6050750206802"}</li>
  * 
@@ -368,10 +368,10 @@ public class ColognePhonetic implements StringEncoder {
 
             if (code != '-' && (lastCode != code && (code != '0' || lastCode == '/') || code < '0' || code > '8')) {
                 left.addRight(code);
+                lastCode = code;
             }
 
             lastChar = chr;
-            lastCode = code;
         }
         return left.toString();
     }
