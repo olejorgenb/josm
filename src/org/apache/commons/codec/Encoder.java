@@ -24,7 +24,7 @@ package org.apache.commons.codec;
  * generic Object to any Encoder implementation in the codec package.</p>
  *
  * @author Apache Software Foundation
- * @version $Id: Encoder.java 634915 2008-03-08 09:30:25Z bayard $
+ * @version $Id: Encoder.java 1075406 2011-02-28 16:18:26Z ggregory $
  */
 public interface Encoder {
     
@@ -33,7 +33,7 @@ public interface Encoder {
      * as an Object.  The Objects here may just be <code>byte[]</code>
      * or <code>String</code>s depending on the implementation used.
      *   
-     * @param pObject An object ot encode
+     * @param source An object ot encode
      * 
      * @return An "encoded" Object
      * 
@@ -41,6 +41,6 @@ public interface Encoder {
      *  thrown if the encoder experiences a failure
      *  condition during the encoding process.
      */
-    Object encode(Object pObject) throws EncoderException;
+    Object encode(Object source) throws EncoderException;
 }  
 

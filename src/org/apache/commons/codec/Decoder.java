@@ -28,7 +28,7 @@ package org.apache.commons.codec;
  * <p>One of the two interfaces at the center of the codec package.</p>
  * 
  * @author Apache Software Foundation
- * @version $Id: Decoder.java 797690 2009-07-24 23:28:35Z ggregory $
+ * @version $Id: Decoder.java 1075404 2011-02-28 16:17:29Z ggregory $
  */
 public interface Decoder {
 
@@ -40,7 +40,7 @@ public interface Decoder {
      * implementation.  If a {@link ClassCastException} occurs
      * this decode method will throw a DecoderException.
      * 
-     * @param pObject an object to "decode"
+     * @param source the object to decode
      * 
      * @return a 'decoded" object
      * 
@@ -50,6 +50,6 @@ public interface Decoder {
      * method is null, a param cannot be cast to the
      * appropriate type for a specific encoder.
      */
-    Object decode(Object pObject) throws DecoderException;
+    Object decode(Object source) throws DecoderException;
 }  
 

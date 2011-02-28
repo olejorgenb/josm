@@ -23,11 +23,11 @@ import org.apache.commons.codec.StringEncoder;
 /**
  * Encodes a string into a Caverphone value.
  * 
- * This is an algorithm created the Caversham Project at the University of Otago. It implements the Caverphone 2.0
+ * This is an algorithm created by the Caversham Project at the University of Otago. It implements the Caverphone 2.0
  * algorithm:
  * 
  * @author Apache Software Foundation
- * @version $Id: Caverphone.java 797690 2009-07-24 23:28:35Z ggregory $
+ * @version $Id: Caverphone.java 1075400 2011-02-28 16:06:57Z ggregory $
  * @see <a href="http://en.wikipedia.org/wiki/Caverphone">Wikipedia - Caverphone</a>
  * @see <a href="http://caversham.otago.ac.nz/files/working/ctp150804.pdf">Caverphone 2.0 specification</a>
  * @since 1.4
@@ -42,10 +42,10 @@ public class Caverphone implements StringEncoder {
     }
 
     /**
-     * Find the caverphone value of a String. 
+     * Encodes the given String into a Caverphone value.
      *
-     * @param txt String to find the caverphone code for
-     * @return A caverphone code corresponding to the String supplied
+     * @param txt String the source string
+     * @return A caverphone code for the given String
      */
     public String caverphone(String txt) {
         // NOTE: Version 1.0 of Caverphone is easily derivable from this code 
