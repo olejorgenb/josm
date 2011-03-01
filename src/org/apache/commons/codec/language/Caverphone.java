@@ -27,7 +27,7 @@ import org.apache.commons.codec.StringEncoder;
  * algorithm:
  * 
  * @author Apache Software Foundation
- * @version $Id: Caverphone.java 1075400 2011-02-28 16:06:57Z ggregory $
+ * @version $Id: Caverphone.java 1075947 2011-03-01 17:56:14Z ggregory $
  * @see <a href="http://en.wikipedia.org/wiki/Caverphone">Wikipedia - Caverphone</a>
  * @see <a href="http://caversham.otago.ac.nz/files/working/ctp150804.pdf">Caverphone 2.0 specification</a>
  * @since 1.4
@@ -71,7 +71,9 @@ public class Caverphone implements StringEncoder {
         txt = txt.replaceAll("^enough", "enou2f");  // 2.0 only
         txt = txt.replaceAll("^trough", "trou2f");  // 2.0 only - note the spec says ^enough here again, c+p error I assume
         txt = txt.replaceAll("^gn", "2n");
-        txt = txt.replaceAll("^mb", "m2");
+
+        // End 
+        txt = txt.replaceAll("mb$", "m2");
 
         // 4. Handle replacements
         txt = txt.replaceAll("cq", "2q");
