@@ -163,16 +163,6 @@ public class OsmValidator implements LayerChangeListener {
         }
     }
 
-    private ValidateUploadHook uploadHook;
-
-//    public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
-//        if (newFrame != null) {
-//            initializeErrorLayer();
-//            if (Main.pref.hasKey(ValidatorPreference.PREF_DEBUG + ".grid"))
-//                Main.main.addLayer(new GridLayer(tr("Grid")));
-//        }
-//    }
-
     public static void initializeErrorLayer() {
         if (!Main.pref.getBoolean(ValidatorPreference.PREF_LAYER, true))
             return;
