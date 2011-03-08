@@ -48,7 +48,7 @@ import org.apache.commons.codec.binary.StringUtils;
  * 
  * @author Apache Software Foundation
  * @since 1.2
- * @version $Id: URLCodec.java 1062599 2011-01-24 01:06:33Z ggregory $
+ * @version $Id: URLCodec.java 1079537 2011-03-08 20:56:19Z ggregory $
  */
 public class URLCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, StringDecoder {
     
@@ -343,7 +343,7 @@ public class URLCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, St
      * 
      * @return Returns the encoding.
      * 
-     * @deprecated use #getDefaultCharset()
+     * @deprecated Use {@link #getDefaultCharset()}, will be removed in 2.0.
      */
     public String getEncoding() {
         return this.charset;
