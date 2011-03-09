@@ -34,7 +34,7 @@ public class NodeElemStyle extends ElemStyle {
 
     private ImageIcon disabledIcon;
 
-    public enum SymbolShape { SQUARE, CIRCLE }
+    public enum SymbolShape { SQUARE, CIRCLE, TRIANGLE, PENTAGON, HEXAGON, HEPTAGON, OCTAGON, NONAGON, DECAGON }
     public enum HorizontalTextAlignment { LEFT, CENTER, RIGHT }
     public enum VerticalTextAlignment { ABOVE, TOP, CENTER, BOTTOM, BELOW }
 
@@ -120,7 +120,7 @@ public class NodeElemStyle extends ElemStyle {
         }
 
     }
-    
+
     public static final NodeElemStyle SIMPLE_NODE_ELEMSTYLE;
     static {
         MultiCascade mc = new MultiCascade();
@@ -170,16 +170,16 @@ public class NodeElemStyle extends ElemStyle {
         TextElement te = TextElement.create(c, PaintColors.TEXT.get());
         if (te != null) {
             HorizontalTextAlignment hAlign = HorizontalTextAlignment.RIGHT;
-            String hAlignStr = c.get("text-anchor-horizontal", null, String.class);
-            if (equal(hAlignStr, "left")) {
+            Keyword hAlignKW = c.get("text-anchor-horizontal", Keyword.RIGHT, Keyword.class);
+            if (equal(hAlignKW.val, "left")) {
                 hAlign = HorizontalTextAlignment.LEFT;
-            } else if (equal(hAlignStr, "center")) {
+            } else if (equal(hAlignKW.val, "center")) {
                 hAlign = HorizontalTextAlignment.CENTER;
-            } else if (equal(hAlignStr, "right")) {
+            } else if (equal(hAlignKW.val, "right")) {
                 hAlign = HorizontalTextAlignment.RIGHT;
             }
             VerticalTextAlignment vAlign = VerticalTextAlignment.BOTTOM;
-            String vAlignStr = c.get("text-anchor-vertical", null, String.class);
+            String vAlignStr = c.get("text-anchor-vertical", Keyword.BOTTOM, Keyword.class).val;
             if (equal(vAlignStr, "above")) {
                 vAlign = VerticalTextAlignment.ABOVE;
             } else if (equal(vAlignStr, "top")) {
@@ -202,11 +202,27 @@ public class NodeElemStyle extends ElemStyle {
         Cascade c_def = env.mc.getCascade("default");
 
         SymbolShape shape;
-        String shapeStr = c.get("symbol-shape", null, String.class);
-        if (equal(shapeStr, "square")) {
+        Keyword shapeKW = c.get("symbol-shape", null, Keyword.class);
+        if (shapeKW == null)
+            return null;
+        if (equal(shapeKW.val, "square")) {
             shape = SymbolShape.SQUARE;
-        } else if (equal(shapeStr, "circle")) {
+        } else if (equal(shapeKW.val, "circle")) {
             shape = SymbolShape.CIRCLE;
+        } else if (equal(shapeKW.val, "triangle")) {
+            shape = SymbolShape.TRIANGLE;
+        } else if (equal(shapeKW.val, "pentagon")) {
+            shape = SymbolShape.PENTAGON;
+        } else if (equal(shapeKW.val, "hexagon")) {
+            shape = SymbolShape.HEXAGON;
+        } else if (equal(shapeKW.val, "heptagon")) {
+            shape = SymbolShape.HEPTAGON;
+        } else if (equal(shapeKW.val, "octagon")) {
+            shape = SymbolShape.OCTAGON;
+        } else if (equal(shapeKW.val, "nonagon")) {
+            shape = SymbolShape.NONAGON;
+        } else if (equal(shapeKW.val, "decagon")) {
+            shape = SymbolShape.DECAGON;
         } else
             return null;
         
