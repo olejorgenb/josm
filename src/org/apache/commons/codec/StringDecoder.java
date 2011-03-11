@@ -18,10 +18,10 @@
 package org.apache.commons.codec;
 
 /**
- * Decodes a String into a String. 
+ * Defines common decoding methods for String decoders.
  *
  * @author Apache Software Foundation
- * @version $Id: StringDecoder.java 1075403 2011-02-28 16:16:39Z ggregory $
+ * @version $Id: StringDecoder.java 1080701 2011-03-11 17:52:27Z ggregory $
  */
 public interface StringDecoder extends Decoder {
     

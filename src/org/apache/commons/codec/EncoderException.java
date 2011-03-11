@@ -18,12 +18,12 @@
 package org.apache.commons.codec;
 
 /**
- * Thrown when there is a failure condition during the encoding process. This exception is thrown when an Encoder
- * encounters a encoding specific exception such as invalid data, inability to calculate a checksum, characters outside
- * of the expected range.
+ * Thrown when there is a failure condition during the encoding process. This exception is thrown when an
+ * {@link Encoder} encounters a encoding specific exception such as invalid data, inability to calculate a checksum,
+ * characters outside of the expected range.
  * 
  * @author Apache Software Foundation
- * @version $Id: EncoderException.java 797804 2009-07-25 17:27:04Z ggregory $
+ * @version $Id: EncoderException.java 1080701 2011-03-11 17:52:27Z ggregory $
  */
 public class EncoderException extends Exception {
 

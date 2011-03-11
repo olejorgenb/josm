@@ -18,10 +18,10 @@
 package org.apache.commons.codec;
 
 /**
- * Encodes a String into a String. 
+ * Defines common encoding methods for String encoders.
  *
  * @author Apache Software Foundation
- * @version $Id: StringEncoder.java 1075402 2011-02-28 16:15:48Z ggregory $
+ * @version $Id: StringEncoder.java 1080701 2011-03-11 17:52:27Z ggregory $
  */
 public interface StringEncoder extends Encoder {
     

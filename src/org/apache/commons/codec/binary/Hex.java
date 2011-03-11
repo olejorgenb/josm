@@ -26,12 +26,12 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.EncoderException;
 
 /**
- * Hex encoder and decoder. The charset used for certain operation can be set, the default is set in
+ * Converts hexadecimal Strings. The charset used for certain operation can be set, the default is set in
  * {@link #DEFAULT_CHARSET_NAME}
  * 
  * @since 1.1
  * @author Apache Software Foundation
- * @version $Id: Hex.java 966309 2010-07-21 16:48:41Z bayard $
+ * @version $Id: Hex.java 1080701 2011-03-11 17:52:27Z ggregory $
  */
 public class Hex implements BinaryEncoder, BinaryDecoder {
 
