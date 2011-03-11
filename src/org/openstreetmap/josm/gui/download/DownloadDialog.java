@@ -392,7 +392,7 @@ public class DownloadDialog extends JDialog  {
         public DownloadAction() {
             putValue(NAME, tr("Download"));
             putValue(SMALL_ICON, ImageProvider.get("download"));
-            putValue(SHORT_DESCRIPTION, tr("Click do download the currently selected area"));
+            putValue(SHORT_DESCRIPTION, tr("Click to download the currently selected area"));
         }
 
         public void run() {
@@ -409,7 +409,7 @@ public class DownloadDialog extends JDialog  {
                 JOptionPane.showMessageDialog(
                         DownloadDialog.this,
                         tr("<html>Neither <strong>{0}</strong> nor <strong>{1}</strong> is enabled.<br>"
-                                + "Please chose to either download OSM data, or GPX data, or both.</html>",
+                                + "Please choose to either download OSM data, or GPX data, or both.</html>",
                                 cbDownloadOsmData.getText(),
                                 cbDownloadGpxData.getText()
                         ),
