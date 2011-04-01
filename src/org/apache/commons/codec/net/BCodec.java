@@ -43,7 +43,7 @@ import org.apache.commons.codec.binary.Base64;
  * 
  * @author Apache Software Foundation
  * @since 1.3
- * @version $Id: BCodec.java 797857 2009-07-25 23:43:33Z ggregory $
+ * @version $Id: BCodec.java 1087590 2011-04-01 05:48:27Z ggregory $
  */
 public class BCodec extends RFC1522Codec implements StringEncoder, StringDecoder {
     /**
@@ -64,7 +64,7 @@ public class BCodec extends RFC1522Codec implements StringEncoder, StringDecoder
      * @param charset
      *                  the default string charset to use.
      * 
-     * @see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="http://download.oracle.com/javase/1.5.0/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     public BCodec(final String charset) {
         super();

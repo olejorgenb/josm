@@ -42,7 +42,7 @@ import org.apache.commons.codec.binary.StringUtils;
  * 
  * @author Apache Software Foundation
  * @since 1.3
- * @version $Id: RFC1522Codec.java 798428 2009-07-28 07:32:49Z ggregory $
+ * @version $Id: RFC1522Codec.java 1087590 2011-04-01 05:48:27Z ggregory $
  */
 abstract class RFC1522Codec {
     
@@ -76,7 +76,7 @@ abstract class RFC1522Codec {
      *  process.
      * @throws UnsupportedEncodingException thrown if charset is not supported 
      * 
-     * @see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
+     * @see <a href="http://download.oracle.com/javase/1.5.0/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
      */
     protected String encodeText(final String text, final String charset)
      throws EncoderException, UnsupportedEncodingException  
