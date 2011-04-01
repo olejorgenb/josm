@@ -23,9 +23,9 @@ import java.util.BitSet;
 
 import org.apache.commons.codec.BinaryDecoder;
 import org.apache.commons.codec.BinaryEncoder;
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.StringDecoder;
 import org.apache.commons.codec.StringEncoder;
 import org.apache.commons.codec.binary.StringUtils;
@@ -58,7 +58,7 @@ import org.apache.commons.codec.binary.StringUtils;
  * 
  * @author Apache Software Foundation
  * @since 1.3
- * @version $Id: QuotedPrintableCodec.java 1080712 2011-03-11 18:26:59Z ggregory $
+ * @version $Id: QuotedPrintableCodec.java 1087895 2011-04-01 21:00:09Z ggregory $
  */
 public class QuotedPrintableCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, StringDecoder {
     /**

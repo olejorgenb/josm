@@ -31,7 +31,7 @@ import org.apache.commons.codec.EncoderException;
  * 
  * @since 1.1
  * @author Apache Software Foundation
- * @version $Id: Hex.java 1080701 2011-03-11 17:52:27Z ggregory $
+ * @version $Id: Hex.java 1087901 2011-04-01 21:17:22Z ggregory $
  */
 public class Hex implements BinaryEncoder, BinaryDecoder {
 
@@ -295,6 +295,7 @@ public class Hex implements BinaryEncoder, BinaryDecoder {
      * 
      * @return a string representation of the object.
      */
+    @Override
     public String toString() {
         return super.toString() + "[charsetName=" + this.charsetName + "]";
     }

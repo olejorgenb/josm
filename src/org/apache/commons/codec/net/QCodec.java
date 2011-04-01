@@ -20,9 +20,9 @@ package org.apache.commons.codec.net;
 import java.io.UnsupportedEncodingException;
 import java.util.BitSet;
 
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.StringDecoder;
 import org.apache.commons.codec.StringEncoder;
 
@@ -44,7 +44,7 @@ import org.apache.commons.codec.StringEncoder;
  * 
  * @author Apache Software Foundation
  * @since 1.3
- * @version $Id: QCodec.java 1087590 2011-04-01 05:48:27Z ggregory $
+ * @version $Id: QCodec.java 1087901 2011-04-01 21:17:22Z ggregory $
  */
 public class QCodec extends RFC1522Codec implements StringEncoder, StringDecoder {
     /**
@@ -126,10 +126,12 @@ public class QCodec extends RFC1522Codec implements StringEncoder, StringDecoder
         this.charset = charset;
     }
 
+    @Override
     protected String getEncoding() {
         return "Q";
     }
 
+    @Override
     protected byte[] doEncoding(byte[] bytes) {
         if (bytes == null) {
             return null;
@@ -145,6 +147,7 @@ public class QCodec extends RFC1522Codec implements StringEncoder, StringDecoder
         return data;
     }
 
+    @Override
     protected byte[] doDecoding(byte[] bytes) throws DecoderException {
         if (bytes == null) {
             return null;

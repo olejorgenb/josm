@@ -25,7 +25,7 @@ import org.apache.commons.codec.StringEncoder;
  * general purpose scheme to find word with similar phonemes.
  * 
  * @author Apache Software Foundation
- * @version $Id: Soundex.java 1064454 2011-01-28 04:40:02Z ggregory $
+ * @version $Id: Soundex.java 1087901 2011-04-01 21:17:22Z ggregory $
  */
 public class Soundex implements StringEncoder {
 
@@ -85,6 +85,7 @@ public class Soundex implements StringEncoder {
      * 
      * @deprecated This feature is not needed since the encoding size must be constant. Will be removed in 2.0.
      */
+    @Deprecated
     private int maxLength = 4;
 
     /**
@@ -199,6 +200,7 @@ public class Soundex implements StringEncoder {
      * @deprecated This feature is not needed since the encoding size must be constant. Will be removed in 2.0.
      * @return int
      */
+    @Deprecated
     public int getMaxLength() {
         return this.maxLength;
     }
@@ -236,6 +238,7 @@ public class Soundex implements StringEncoder {
      * @param maxLength
      *                  The maxLength to set
      */
+    @Deprecated
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
     }

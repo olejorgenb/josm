@@ -39,7 +39,7 @@ package org.apache.commons.codec.binary;
  * @see <a href="http://www.ietf.org/rfc/rfc4648.txt">RFC 4648</a>
  * 
  * @since 1.5
- * @version $Revision: 1086316 $
+ * @version $Revision: 1087901 $
  */
 public class Base32 extends BaseNCodec {
 
@@ -278,6 +278,7 @@ public class Base32 extends BaseNCodec {
      *
      * Output is written to {@link #buffer} as 8-bit octets, using {@link #pos} as the buffer position
      */
+    @Override
     void decode(byte[] in, int inPos, int inAvail) { // package protected for access from I/O streams
         if (eof) {
             return;
@@ -366,6 +367,7 @@ public class Base32 extends BaseNCodec {
      * @param inAvail
      *            Amount of bytes available from input for encoding.
      */
+    @Override
     void encode(byte[] in, int inPos, int inAvail) { // package protected for access from I/O streams
         if (eof) {
             return;
@@ -464,6 +466,7 @@ public class Base32 extends BaseNCodec {
      *            The value to test
      * @return <code>true</code> if the value is defined in the the Base32 alphabet <code>false</code> otherwise.
      */
+    @Override
     public boolean isInAlphabet(byte octet) {
         return octet >= 0 && octet < decodeTable.length && decodeTable[octet] != -1;
     }

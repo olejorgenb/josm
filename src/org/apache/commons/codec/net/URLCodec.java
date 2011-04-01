@@ -23,9 +23,9 @@ import java.util.BitSet;
 
 import org.apache.commons.codec.BinaryDecoder;
 import org.apache.commons.codec.BinaryEncoder;
+import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.StringDecoder;
 import org.apache.commons.codec.StringEncoder;
 import org.apache.commons.codec.binary.StringUtils;
@@ -48,7 +48,7 @@ import org.apache.commons.codec.binary.StringUtils;
  * 
  * @author Apache Software Foundation
  * @since 1.2
- * @version $Id: URLCodec.java 1079537 2011-03-08 20:56:19Z ggregory $
+ * @version $Id: URLCodec.java 1087901 2011-04-01 21:17:22Z ggregory $
  */
 public class URLCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, StringDecoder {
     
@@ -345,6 +345,7 @@ public class URLCodec implements BinaryEncoder, BinaryDecoder, StringEncoder, St
      * 
      * @deprecated Use {@link #getDefaultCharset()}, will be removed in 2.0.
      */
+    @Deprecated
     public String getEncoding() {
         return this.charset;
     }

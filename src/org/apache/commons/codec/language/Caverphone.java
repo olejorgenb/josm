@@ -27,12 +27,13 @@ import org.apache.commons.codec.StringEncoder;
  * algorithm:
  * 
  * @author Apache Software Foundation
- * @version $Id: Caverphone.java 1079535 2011-03-08 20:54:37Z ggregory $
+ * @version $Id: Caverphone.java 1087901 2011-04-01 21:17:22Z ggregory $
  * @see <a href="http://en.wikipedia.org/wiki/Caverphone">Wikipedia - Caverphone</a>
  * @see <a href="http://caversham.otago.ac.nz/files/working/ctp150804.pdf">Caverphone 2.0 specification</a>
  * @since 1.4
  * @deprecated 1.5 Replaced by {@link Caverphone2}, will be removed in 2.0.
  */
+@Deprecated
 public class Caverphone implements StringEncoder {
 
     /**
