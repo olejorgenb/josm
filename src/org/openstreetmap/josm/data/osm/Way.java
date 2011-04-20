@@ -57,7 +57,7 @@ public final class Way extends OsmPrimitive {
             } else {
                 this.nodes = nodes.toArray(new Node[nodes.size()]);
             }
-            for (Node node:this.nodes) {
+            for (Node node: this.nodes) {
                 node.addReferrer(this);
             }
 
@@ -66,6 +66,25 @@ public final class Way extends OsmPrimitive {
         } finally {
             writeUnlock(locked);
         }
+    }
+
+    /**
+     * Prevent directly following identical nodes in ways.
+     */
+    private List<Node> removeDouble(List<Node> nodes) {
+        Node last = null;
+        int count = nodes.size();
+        for(int i = 0; i < count && count > 2;) {
+            Node n = nodes.get(i);
+            if(last == n) {
+                nodes.remove(i);
+                --count;
+            } else {
+                last = n;
+                ++i;
+            }
+        }
+        return nodes;
     }
 
     /**
@@ -277,7 +296,7 @@ public final class Way extends OsmPrimitive {
             } else if (i >= 2 && i <= 3 && copy.get(0) == copy.get(i-1)) {
                 copy.remove(i-1);
             }
-            setNodes(copy);
+            setNodes(removeDouble(copy));
         } finally {
             writeUnlock(locked);
         }
@@ -302,7 +321,7 @@ public final class Way extends OsmPrimitive {
             } else if (i >= 2 && i <= 3 && copy.get(0) == copy.get(i-1)) {
                 copy.remove(i-1);
             }
-            setNodes(copy);
+            setNodes(removeDouble(copy));
         } finally {
             writeUnlock(locked);
         }
