@@ -25,7 +25,7 @@ import org.apache.commons.codec.StringEncoder;
  * general purpose scheme to find word with similar phonemes.
  * 
  * @author Apache Software Foundation
- * @version $Id: Soundex.java 1087901 2011-04-01 21:17:22Z ggregory $
+ * @version $Id: Soundex.java 1125236 2011-05-20 05:10:48Z ggregory $
  */
 public class Soundex implements StringEncoder {
 
@@ -79,14 +79,6 @@ public class Soundex implements StringEncoder {
     public int difference(String s1, String s2) throws EncoderException {
         return SoundexUtils.difference(this, s1, s2);
     }
-
-    /**
-     * The maximum length of a Soundex code - Soundex codes are only four characters by definition.
-     * 
-     * @deprecated This feature is not needed since the encoding size must be constant. Will be removed in 2.0.
-     */
-    @Deprecated
-    private int maxLength = 4;
 
     /**
      * Every letter of the alphabet is "mapped" to a numerical value. This char array holds the values to which each
@@ -195,17 +187,6 @@ public class Soundex implements StringEncoder {
     }
 
     /**
-     * Returns the maxLength. Standard Soundex
-     * 
-     * @deprecated This feature is not needed since the encoding size must be constant. Will be removed in 2.0.
-     * @return int
-     */
-    @Deprecated
-    public int getMaxLength() {
-        return this.maxLength;
-    }
-
-    /**
      * Returns the soundex mapping.
      * 
      * @return soundexMapping.
@@ -229,18 +210,6 @@ public class Soundex implements StringEncoder {
             throw new IllegalArgumentException("The character is not mapped: " + ch);
         }
         return this.getSoundexMapping()[index];
-    }
-
-    /**
-     * Sets the maxLength.
-     * 
-     * @deprecated This feature is not needed since the encoding size must be constant. Will be removed in 2.0.
-     * @param maxLength
-     *                  The maxLength to set
-     */
-    @Deprecated
-    public void setMaxLength(int maxLength) {
-        this.maxLength = maxLength;
     }
 
     /**
