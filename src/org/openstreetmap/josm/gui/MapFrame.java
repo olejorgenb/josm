@@ -289,7 +289,7 @@ public class MapFrame extends JPanel implements Destroyable, LayerChangeListener
         } else
             throw new IllegalArgumentException("MapMode action must be subclass of MapMode");
     }
-    
+
     public void removeMapMode(IconToggleButton mode) {
         toolBarActions.remove(mode);
         toolGroup.remove(mode);

@@ -459,6 +459,7 @@ public class PluginHandler {
         URLClassLoader pluginClassLoader = new URLClassLoader(jarUrls, Main.class.getClassLoader());
         return pluginClassLoader;
     }
+
     private static String getPackagePartOfClassName(String name) {
         for (int i = name.length() - 1; i >= 0; i--) {
             if (name.charAt(i) == '.')
@@ -492,26 +493,26 @@ public class PluginHandler {
         ClassLoader deceiveing = new ClassLoader(Main.class.getClassLoader()) {
             @Override
             // does not work, must use loadClass/2
-//            public Class<?> loadClass(String name) throws ClassNotFoundException {
-//                System.out.println(name);
-//                if (packageList.contains(getPackagePartOfClassName(name)))
-//                    return null;
-//                else
-//                    return super.loadClass(name);
-//            }
+            //            public Class<?> loadClass(String name) throws ClassNotFoundException {
+            //                System.out.println(name);
+            //                if (packageList.contains(getPackagePartOfClassName(name)))
+            //                    return null;
+            //                else
+            //                    return super.loadClass(name);
+            //            }
             protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
                 System.out.println(name);
                 if (packageList.contains(getPackagePartOfClassName(name)))
                     return null;
                 else
-                 // is it possible that this calls loadClass/2 again, causing infinite recursion?
-                    return super.loadClass(name, resolve); 
+                    // is it possible that this calls loadClass/2 again, causing infinite recursion?
+                    return super.loadClass(name, resolve);
             }
         };
         return new URLClassLoader(jarUrls, deceiveing);
     }
-    
-    // MANIFEST property instead
+
+    // TODO: MANIFEST property instead? This is simpler for everyone though?
     private static boolean supportReload(PluginProxy pluginProxy) {
         try {
             Method m = pluginProxy.plugin.getClass().getMethod("preReloadCleanup");
@@ -552,12 +553,12 @@ public class PluginHandler {
         for (PluginProxy plugin : pluginList) {
             plugin.mapFrameInitialized(Main.map, Main.map);
         }
-//        PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
+        //        PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
         //        } finally {
-//            monitor.finishTask();
-//        }
+        //            monitor.finishTask();
+        //        }
     }
-    
+
     /**
      * Loads and instantiates the plugin described by <code>plugin</code> using
      * the class loader <code>pluginClassLoader</code>.
