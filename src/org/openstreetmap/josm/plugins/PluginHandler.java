@@ -13,6 +13,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -57,10 +58,12 @@ import org.openstreetmap.josm.gui.help.HelpUtil;
 import org.openstreetmap.josm.gui.preferences.PreferenceSettingFactory;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
+import org.openstreetmap.josm.io.OsmTransferException;
 import org.openstreetmap.josm.io.remotecontrol.RemoteControl;
 import org.openstreetmap.josm.tools.CheckParameterUtil;
 import org.openstreetmap.josm.tools.GBC;
 import org.openstreetmap.josm.tools.ImageProvider;
+import org.xml.sax.SAXException;
 
 /**
  * PluginHandler is basically a collection of static utility functions used to bootstrap
@@ -455,7 +458,84 @@ public class PluginHandler {
         URLClassLoader pluginClassLoader = new URLClassLoader(jarUrls, Main.class.getClassLoader());
         return pluginClassLoader;
     }
+    private static String getPackagePartOfClassName(String name) {
+        for (int i = name.length() - 1; i >= 0; i--) {
+            if (name.charAt(i) == '.')
+                return name.substring(0, i);
+        }
+        return "";
+    }
 
+    public static ClassLoader createClassReloader(Collection<PluginInformation> plugins) {
+        // iterate all plugins and collect all libraries of all plugins:
+        List<URL> allPluginLibraries = new LinkedList<URL>();
+        File pluginDir = Main.pref.getPluginsDirectory();
+        for (PluginInformation info : plugins) {
+            if (info.libraries == null) {
+                continue;
+            }
+            allPluginLibraries.addAll(info.libraries);
+            File pluginJar = new File(pluginDir, info.name + ".jar");
+            URL pluginJarUrl = PluginInformation.fileToURL(pluginJar);
+            allPluginLibraries.add(pluginJarUrl);
+        }
+
+        // create a classloader for all plugins:
+        URL[] jarUrls = new URL[allPluginLibraries.size()];
+        jarUrls = allPluginLibraries.toArray(jarUrls);
+
+        final Set<String> packageList = new HashSet<String>();
+        for (PluginInformation pi : plugins) {
+            packageList.add(getPackagePartOfClassName(pi.className));
+        }
+        ClassLoader deceiveing = new ClassLoader(Main.class.getClassLoader()) {
+            @Override
+            // does not work, must use loadClass/2
+//            public Class<?> loadClass(String name) throws ClassNotFoundException {
+//                System.out.println(name);
+//                if (packageList.contains(getPackagePartOfClassName(name)))
+//                    return null;
+//                else
+//                    return super.loadClass(name);
+//            }
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                System.out.println(name);
+                if (packageList.contains(getPackagePartOfClassName(name)))
+                    return null;
+                else
+                 // is it possible that this calls loadClass/2 again, causing infinite recursion?
+                    return super.loadClass(name, resolve); 
+            }
+        };
+        return new URLClassLoader(jarUrls, deceiveing);
+    }
+    
+    public static void reloadPlugins() {
+//        List<PluginInformation> pi = new ArrayList<PluginInformation>();
+//        for(Plugin p : pluginList) {
+//            pi.add(p.getPluginInformation());
+//        }
+        ProgressMonitor monitor = null;
+        if (monitor == null) {
+            monitor = NullProgressMonitor.INSTANCE;
+        }
+        try {
+            List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
+
+            monitor.beginTask(tr("Loading plugins ..."));
+            monitor.subTask(tr("Checking plugin preconditions..."));
+            Collection<PluginInformation> toLoad = preproccessPluginList(null, plugins);
+            ClassLoader cl = createClassReloader(toLoad);
+            if (toLoad.isEmpty())
+                return;
+                
+            loadPluginsNoCheck(null, toLoad, null, cl);
+            PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
+        } finally {
+            monitor.finishTask();
+        }
+    }
+    
     /**
      * Loads and instantiates the plugin described by <code>plugin</code> using
      * the class loader <code>pluginClassLoader</code>.
@@ -493,46 +573,57 @@ public class PluginHandler {
      * @param plugins the list of plugins
      * @param monitor the progress monitor. Defaults to {@see NullProgressMonitor#INSTANCE} if null.
      */
-    public static void loadPlugins(Window parent,Collection<PluginInformation> plugins, ProgressMonitor monitor) {
+    public static void loadPlugins(Window parent, Collection<PluginInformation> plugins, ProgressMonitor monitor) {
         if (monitor == null) {
             monitor = NullProgressMonitor.INSTANCE;
         }
         try {
             monitor.beginTask(tr("Loading plugins ..."));
             monitor.subTask(tr("Checking plugin preconditions..."));
-            List<PluginInformation> toLoad = new LinkedList<PluginInformation>();
-            for (PluginInformation pi: plugins) {
-                if (checkLoadPreconditions(parent, plugins, pi)) {
-                    toLoad.add(pi);
-                }
-            }
-            // sort the plugins according to their "staging" equivalence class. The
-            // lower the value of "stage" the earlier the plugin should be loaded.
-            //
-            Collections.sort(
-                    toLoad,
-                    new Comparator<PluginInformation>() {
-                        public int compare(PluginInformation o1, PluginInformation o2) {
-                            if (o1.stage < o2.stage) return -1;
-                            if (o1.stage == o2.stage) return 0;
-                            return 1;
-                        }
-                    }
-            );
+            Collection<PluginInformation> toLoad = preproccessPluginList(parent, plugins);
             if (toLoad.isEmpty())
                 return;
-
-            ClassLoader pluginClassLoader = createClassLoader(toLoad);
-            sources.add(0, pluginClassLoader);
-            monitor.setTicksCount(toLoad.size());
-            for (PluginInformation info : toLoad) {
-                monitor.setExtraText(tr("Loading plugin ''{0}''...", info.name));
-                loadPlugin(parent, info, pluginClassLoader);
-                monitor.worked(1);
-            }
+            loadPluginsNoCheck(parent, toLoad, monitor, PluginHandler.createClassLoader(toLoad));
         } finally {
             monitor.finishTask();
         }
+    }
+
+    public static void loadPluginsNoCheck(Window parent, Collection<PluginInformation> plugins,
+            ProgressMonitor monitor, ClassLoader classLoader) {
+        sources.add(0, classLoader);
+        if(monitor != null)
+            monitor.setTicksCount(plugins.size());
+        for (PluginInformation info : plugins) {
+            if(monitor != null)
+                monitor.setExtraText(tr("Loading plugin ''{0}''...", info.name));
+            loadPlugin(parent, info, classLoader);
+            if(monitor != null)
+                monitor.worked(1);
+        }
+    }
+
+    private static Collection<PluginInformation> preproccessPluginList(Window parent,
+            Collection<PluginInformation> plugins) {
+        List<PluginInformation> toLoad = new LinkedList<PluginInformation>();
+        for (PluginInformation pi : plugins) {
+            if (checkLoadPreconditions(parent, plugins, pi)) {
+                toLoad.add(pi);
+            }
+        }
+        // sort the plugins according to their "staging" equivalence class. The
+        // lower the value of "stage" the earlier the plugin should be loaded.
+        //
+        Collections.sort(toLoad, new Comparator<PluginInformation>() {
+            public int compare(PluginInformation o1, PluginInformation o2) {
+                if (o1.stage < o2.stage)
+                    return -1;
+                if (o1.stage == o2.stage)
+                    return 0;
+                return 1;
+            }
+        });
+        return toLoad;
     }
 
     /**
@@ -583,17 +674,20 @@ public class PluginHandler {
         }
         try {
             ReadLocalPluginInformationTask task = new ReadLocalPluginInformationTask(monitor);
-            ExecutorService service = Executors.newSingleThreadExecutor();
-            Future<?> future = service.submit(task);
-            try {
-                future.get();
-            } catch(ExecutionException e) {
-                e.printStackTrace();
-                return null;
-            } catch(InterruptedException e) {
-                e.printStackTrace();
-                return null;
-            }
+//            ExecutorService service = Executors.newSingleThreadExecutor();
+//            Future<?> future = service.submit(task);
+//            try {
+//                future.get();
+//            } catch(ExecutionException e) {
+//                e.printStackTrace();
+//                return null;
+//            } catch(InterruptedException e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+
+            task.doRealRun();
+  
             HashMap<String, PluginInformation> ret = new HashMap<String, PluginInformation>();
             for (PluginInformation pi: task.getAvailablePlugins()) {
                 ret.put(pi.name, pi);

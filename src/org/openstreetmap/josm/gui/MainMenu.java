@@ -52,6 +52,7 @@ import org.openstreetmap.josm.actions.NewAction;
 import org.openstreetmap.josm.actions.OpenFileAction;
 import org.openstreetmap.josm.actions.OpenLocationAction;
 import org.openstreetmap.josm.actions.OrthogonalizeAction;
+import org.openstreetmap.josm.actions.ReloadPluginsAction;
 import org.openstreetmap.josm.actions.OrthogonalizeAction.Undo;
 import org.openstreetmap.josm.actions.PasteAction;
 import org.openstreetmap.josm.actions.PasteTagsAction;
@@ -359,6 +360,7 @@ public class MainMenu extends JMenuBar {
         current.setAccelerator(Shortcut.registerShortcut("system:help", tr("Help"), KeyEvent.VK_F1,
                 Shortcut.GROUP_DIRECT).getKeyStroke());
         add(helpMenu, about);
+        add(helpMenu, new ReloadPluginsAction());
 
         new PresetsMenuEnabler(presetsMenu).refreshEnabled();
     }
