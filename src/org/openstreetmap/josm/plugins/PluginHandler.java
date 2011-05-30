@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -510,37 +511,51 @@ public class PluginHandler {
         return new URLClassLoader(jarUrls, deceiveing);
     }
     
-    public static void reloadPlugins() {
-//        List<PluginInformation> pi = new ArrayList<PluginInformation>();
-//        for(Plugin p : pluginList) {
-//            pi.add(p.getPluginInformation());
-//        }
-        ProgressMonitor monitor = null;
-        if (monitor == null) {
-            monitor = NullProgressMonitor.INSTANCE;
-        }
+    // MANIFEST property instead
+    private static boolean supportReload(PluginProxy pluginProxy) {
         try {
-            
-            for(PluginProxy pp : pluginList) {
-                pp.preReloadCleanup();
-            }
-            
-            pluginList.clear();
-            
-            List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
-
-            monitor.beginTask(tr("Loading plugins ..."));
-            monitor.subTask(tr("Checking plugin preconditions..."));
-            Collection<PluginInformation> toLoad = preproccessPluginList(null, plugins);
-            ClassLoader cl = createClassReloader(toLoad);
-            if (toLoad.isEmpty())
-                return;
-
-            loadPluginsNoCheck(null, toLoad, null, cl);
-            PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
-        } finally {
-            monitor.finishTask();
+            Method m = pluginProxy.plugin.getClass().getMethod("preReloadCleanup");
+            return !m.getDeclaringClass().equals(Plugin.class);
+        } catch (NoSuchMethodException e) {
+            return false;
         }
+    }
+
+    // FIXME: fucked if p1 depends on p2 and only p2 is reloadable
+    // TODO: add progressmonitor support
+    public static void reloadPlugins() {
+        //        ProgressMonitor monitor = null;
+        //        if (monitor == null) {
+        //            monitor = NullProgressMonitor.INSTANCE;
+        //        }
+        List<PluginInformation> plugins = new ArrayList<PluginInformation>();
+        for (Iterator<PluginProxy> iter = pluginList.iterator(); iter.hasNext();) {
+            PluginProxy pp = iter.next();
+            if (supportReload(pp)) {
+                plugins.add(pp.getPluginInformation());
+                iter.remove();
+            }
+        }
+        if (plugins.isEmpty())
+            return;
+        //        try {
+
+        //            List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
+
+        //            monitor.beginTask(tr("Loading plugins ..."));
+        //            monitor.subTask(tr("Checking plugin preconditions..."));
+        //            Collection<PluginInformation> toLoad = preproccessPluginList(null, plugins);
+
+        ClassLoader cl = createClassReloader(plugins);
+
+        loadPluginsNoCheck(null, plugins, null, cl);
+        for (PluginProxy plugin : pluginList) {
+            plugin.mapFrameInitialized(Main.map, Main.map);
+        }
+//        PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
+        //        } finally {
+//            monitor.finishTask();
+//        }
     }
     
     /**
@@ -604,6 +619,8 @@ public class PluginHandler {
         for (PluginInformation info : plugins) {
             if(monitor != null)
                 monitor.setExtraText(tr("Loading plugin ''{0}''...", info.name));
+            else
+                System.out.println(tr("Loading plugin ''{0}''...", info.name));
             loadPlugin(parent, info, classLoader);
             if(monitor != null)
                 monitor.worked(1);
