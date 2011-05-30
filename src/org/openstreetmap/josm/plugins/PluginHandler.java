@@ -470,8 +470,15 @@ public class PluginHandler {
         return "";
     }
 
+    private static boolean isSubPackageOf(String sub, String parent) {
+        return sub.startsWith(parent);
+    }
+
     /**
      * Creates a class loader that will reload the supplied plugins
+     *
+     * The plugins should not define classes in packages above the package of the 'Plugin-Class' (defined in MANIFEST)
+     * ie. all classes must belong to a package matching: <plugin-class-package>.*
      */
     public static ClassLoader createClassReloader(Collection<PluginInformation> plugins) {
         final Set<String> packageList = new HashSet<String>();
@@ -481,14 +488,24 @@ public class PluginHandler {
 
         ClassLoader deceiving = new ClassLoader(Main.class.getClassLoader()) {
             // Overriding loadClass/1 does not seem to work ...
+            // Are the 'fullClassName' guaranteed to be full?
             @Override
-            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                System.out.println(name);
-                if (packageList.contains(getPackagePartOfClassName(name)))
+            protected Class<?> loadClass(String fullClassName, boolean resolve) throws ClassNotFoundException {
+                String packageOfClass = getPackagePartOfClassName(fullClassName);
+                boolean hide = false;
+                for(String pkg : packageList) {
+                    if(isSubPackageOf(packageOfClass, pkg)) {
+                        hide = true;
+                        break;
+                    }
+                }
+                if(hide) {
+                    System.out.println(fullClassName);
                     return null;
-                else
+                } else {
                     // is it possible that super.loadClass/2 calls this.loadClass/2 again, causing infinite recursion?
-                    return super.loadClass(name, resolve);
+                    return super.loadClass(fullClassName, resolve);
+                }
             }
         };
         URL[] jarUrls = createJarURLs(plugins);
@@ -523,6 +540,7 @@ public class PluginHandler {
         for (Iterator<PluginProxy> iter = pluginList.iterator(); iter.hasNext();) {
             PluginProxy pp = iter.next();
             if (supportReload(pp)) {
+                pp.preReloadCleanup();
                 plugins.add(pp.getPluginInformation());
                 iter.remove();
             }
