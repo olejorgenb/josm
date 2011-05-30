@@ -1,6 +1,7 @@
 // License: GPL. Copyright 2007 by Immanuel Scholz and others
 package org.openstreetmap.josm.plugins;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.openstreetmap.josm.gui.MapFrame;
@@ -27,6 +28,16 @@ public class PluginProxy extends Plugin {
     @Override public void mapFrameInitialized(MapFrame oldFrame, MapFrame newFrame) {
         try {
             plugin.getClass().getMethod("mapFrameInitialized", MapFrame.class, MapFrame.class).invoke(plugin, oldFrame, newFrame);
+        } catch (NoSuchMethodException e) {
+        } catch (Exception e) {
+            BugReportExceptionHandler.handleException(new PluginException(this, getPluginInformation().name, e));
+        }
+    }
+    
+    @Override public void preReloadCleanup() {
+        try {
+            Method m = plugin.getClass().getMethod("preReloadCleanup");
+            m.invoke(plugin);
         } catch (NoSuchMethodException e) {
         } catch (Exception e) {
             BugReportExceptionHandler.handleException(new PluginException(this, getPluginInformation().name, e));

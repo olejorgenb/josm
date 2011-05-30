@@ -71,6 +71,10 @@ public abstract class Plugin {
     public void setPluginInformation(PluginInformation info) {
         this.info = info;
     }
+    
+    public void preReloadCleanup() {
+        System.out.println("no cleanup for this class");
+    }
 
     /**
      * @return The directory for the plugin to store all kind of stuff.

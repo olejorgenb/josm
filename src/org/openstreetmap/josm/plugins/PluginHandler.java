@@ -520,6 +520,13 @@ public class PluginHandler {
             monitor = NullProgressMonitor.INSTANCE;
         }
         try {
+            
+            for(PluginProxy pp : pluginList) {
+                pp.preReloadCleanup();
+            }
+            
+            pluginList.clear();
+            
             List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
 
             monitor.beginTask(tr("Loading plugins ..."));
@@ -528,7 +535,7 @@ public class PluginHandler {
             ClassLoader cl = createClassReloader(toLoad);
             if (toLoad.isEmpty())
                 return;
-                
+
             loadPluginsNoCheck(null, toLoad, null, cl);
             PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
         } finally {
