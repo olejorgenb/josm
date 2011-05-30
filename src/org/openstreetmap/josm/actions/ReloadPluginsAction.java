@@ -12,8 +12,8 @@ import org.openstreetmap.josm.tools.Shortcut;
 public class ReloadPluginsAction extends JosmAction {
 
     public ReloadPluginsAction() {
-        super(tr("Reload plugins"), "about", tr("Reload plugins"), Shortcut.registerShortcut("system:about",
-                tr("Reload plugins"), KeyEvent.VK_F11, Shortcut.GROUP_DIRECT, Shortcut.SHIFT_DEFAULT), true);
+        super(tr("Reload plugins"), null, tr("Reload plugins"), Shortcut.registerShortcut("system:reload-plugins",
+                tr("Reload plugins"), KeyEvent.VK_F5, Shortcut.GROUP_DIRECT, Shortcut.SHIFT_DEFAULT), true);
     }
 
     @Override

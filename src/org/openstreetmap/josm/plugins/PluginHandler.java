@@ -528,6 +528,7 @@ public class PluginHandler {
     // TODO: This does not check preconditions for the plugins, assuming they are fulfilled as the plugins are already loaded. This is of course not 100% correct.
     // TODO: add progressmonitor support
     // TODO: do we need to respect the loadearly/late flags?
+    // TODO: seems to be quick enough, but is it problematic to to in a worker thread?
     /**
      * Reloads all loaded plugins implementing 'preReloadCleanup'
      */
