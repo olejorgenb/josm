@@ -13,7 +13,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -59,12 +58,9 @@ import org.openstreetmap.josm.gui.help.HelpUtil;
 import org.openstreetmap.josm.gui.preferences.PreferenceSettingFactory;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
-import org.openstreetmap.josm.io.OsmTransferException;
-import org.openstreetmap.josm.io.remotecontrol.RemoteControl;
 import org.openstreetmap.josm.tools.CheckParameterUtil;
 import org.openstreetmap.josm.tools.GBC;
 import org.openstreetmap.josm.tools.ImageProvider;
-import org.xml.sax.SAXException;
 
 /**
  * PluginHandler is basically a collection of static utility functions used to bootstrap
@@ -433,13 +429,9 @@ public class PluginHandler {
     }
 
     /**
-     * Creates a class loader for loading plugin code.
-     *
-     * @param plugins the collection of plugins which are going to be loaded with this
-     * class loader
-     * @return the class loader
+     * Helper to extract the jar paths of the plugins
      */
-    public static ClassLoader createClassLoader(Collection<PluginInformation> plugins) {
+    private static URL[] createJarURLs(Collection<PluginInformation> plugins) {
         // iterate all plugins and collect all libraries of all plugins:
         List<URL> allPluginLibraries = new LinkedList<URL>();
         File pluginDir = Main.pref.getPluginsDirectory();
@@ -455,7 +447,17 @@ public class PluginHandler {
 
         // create a classloader for all plugins:
         URL[] jarUrls = new URL[allPluginLibraries.size()];
-        jarUrls = allPluginLibraries.toArray(jarUrls);
+        return allPluginLibraries.toArray(jarUrls);
+    }
+    /**
+     * Creates a class loader for loading plugin code.
+     *
+     * @param plugins the collection of plugins which are going to be loaded with this
+     * class loader
+     * @return the class loader
+     */
+    public static ClassLoader createClassLoader(Collection<PluginInformation> plugins) {
+        URL[] jarUrls = createJarURLs(plugins);
         URLClassLoader pluginClassLoader = new URLClassLoader(jarUrls, Main.class.getClassLoader());
         return pluginClassLoader;
     }
@@ -468,48 +470,29 @@ public class PluginHandler {
         return "";
     }
 
+    /**
+     * Creates a class loader that will reload the supplied plugins
+     */
     public static ClassLoader createClassReloader(Collection<PluginInformation> plugins) {
-        // iterate all plugins and collect all libraries of all plugins:
-        List<URL> allPluginLibraries = new LinkedList<URL>();
-        File pluginDir = Main.pref.getPluginsDirectory();
-        for (PluginInformation info : plugins) {
-            if (info.libraries == null) {
-                continue;
-            }
-            allPluginLibraries.addAll(info.libraries);
-            File pluginJar = new File(pluginDir, info.name + ".jar");
-            URL pluginJarUrl = PluginInformation.fileToURL(pluginJar);
-            allPluginLibraries.add(pluginJarUrl);
-        }
-
-        // create a classloader for all plugins:
-        URL[] jarUrls = new URL[allPluginLibraries.size()];
-        jarUrls = allPluginLibraries.toArray(jarUrls);
-
         final Set<String> packageList = new HashSet<String>();
         for (PluginInformation pi : plugins) {
             packageList.add(getPackagePartOfClassName(pi.className));
         }
-        ClassLoader deceiveing = new ClassLoader(Main.class.getClassLoader()) {
+
+        ClassLoader deceiving = new ClassLoader(Main.class.getClassLoader()) {
+            // Overriding loadClass/1 does not seem to work ...
             @Override
-            // does not work, must use loadClass/2
-            //            public Class<?> loadClass(String name) throws ClassNotFoundException {
-            //                System.out.println(name);
-            //                if (packageList.contains(getPackagePartOfClassName(name)))
-            //                    return null;
-            //                else
-            //                    return super.loadClass(name);
-            //            }
             protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
                 System.out.println(name);
                 if (packageList.contains(getPackagePartOfClassName(name)))
                     return null;
                 else
-                    // is it possible that this calls loadClass/2 again, causing infinite recursion?
+                    // is it possible that super.loadClass/2 calls this.loadClass/2 again, causing infinite recursion?
                     return super.loadClass(name, resolve);
             }
         };
-        return new URLClassLoader(jarUrls, deceiveing);
+        URL[] jarUrls = createJarURLs(plugins);
+        return new URLClassLoader(jarUrls, deceiving);
     }
 
     // TODO: MANIFEST property instead? This is simpler for everyone though?
@@ -523,7 +506,14 @@ public class PluginHandler {
     }
 
     // FIXME: fucked if p1 depends on p2 and only p2 is reloadable
+    // Should be OK to let 'sources' keep the old class loader since the new class loader is prepended?
+    //   Somewhat complicated if we should filter out the reloaded jars from the old loader...
+    // TODO: This does not check preconditions for the plugins, assuming they are fulfilled as the plugins are already loaded. This is of course not 100% correct.
     // TODO: add progressmonitor support
+    // TODO: do we need to respect the loadearly/late flags?
+    /**
+     * Reloads all loaded plugins implementing 'preReloadCleanup'
+     */
     public static void reloadPlugins() {
         //        ProgressMonitor monitor = null;
         //        if (monitor == null) {
@@ -615,15 +605,15 @@ public class PluginHandler {
     public static void loadPluginsNoCheck(Window parent, Collection<PluginInformation> plugins,
             ProgressMonitor monitor, ClassLoader classLoader) {
         sources.add(0, classLoader);
-        if(monitor != null)
+        if (monitor != null)
             monitor.setTicksCount(plugins.size());
         for (PluginInformation info : plugins) {
-            if(monitor != null)
+            if (monitor != null)
                 monitor.setExtraText(tr("Loading plugin ''{0}''...", info.name));
             else
                 System.out.println(tr("Loading plugin ''{0}''...", info.name));
             loadPlugin(parent, info, classLoader);
-            if(monitor != null)
+            if (monitor != null)
                 monitor.worked(1);
         }
     }

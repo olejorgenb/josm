@@ -33,7 +33,7 @@ public class PluginProxy extends Plugin {
             BugReportExceptionHandler.handleException(new PluginException(this, getPluginInformation().name, e));
         }
     }
-    
+
     @Override public void preReloadCleanup() {
         try {
             Method m = plugin.getClass().getMethod("preReloadCleanup");
