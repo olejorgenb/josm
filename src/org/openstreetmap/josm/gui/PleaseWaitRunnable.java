@@ -74,7 +74,7 @@ public abstract class PleaseWaitRunnable implements Runnable, CancelListener {
         this.ignoreException = ignoreException;
     }
 
-    public void doRealRun() {
+    private void doRealRun() {
         try {
             try {
                 progressMonitor.addCancelListener(this);

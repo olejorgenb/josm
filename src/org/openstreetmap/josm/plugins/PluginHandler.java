@@ -698,20 +698,17 @@ public class PluginHandler {
         }
         try {
             ReadLocalPluginInformationTask task = new ReadLocalPluginInformationTask(monitor);
-//            ExecutorService service = Executors.newSingleThreadExecutor();
-//            Future<?> future = service.submit(task);
-//            try {
-//                future.get();
-//            } catch(ExecutionException e) {
-//                e.printStackTrace();
-//                return null;
-//            } catch(InterruptedException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-
-            task.doRealRun();
-  
+            ExecutorService service = Executors.newSingleThreadExecutor();
+            Future<?> future = service.submit(task);
+            try {
+                future.get();
+            } catch(ExecutionException e) {
+                e.printStackTrace();
+                return null;
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+                return null;
+            }
             HashMap<String, PluginInformation> ret = new HashMap<String, PluginInformation>();
             for (PluginInformation pi: task.getAvailablePlugins()) {
                 ret.put(pi.name, pi);
