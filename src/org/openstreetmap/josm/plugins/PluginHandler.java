@@ -547,6 +547,8 @@ public class PluginHandler {
         }
         if (plugins.isEmpty())
             return;
+        // safest to not have a to-be-reloaded map mode active
+        Main.map.selectSelectTool(false);
         //        try {
 
         //            List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
