@@ -547,34 +547,35 @@ public class PluginHandler {
         //            monitor = NullProgressMonitor.INSTANCE;
         //        }
         //        loadLocallyAvailablePluginInformation(null); // can't be run from the gui thread
-        List<PluginInformation> plugins = new ArrayList<PluginInformation>();
+        List<PluginInformation> reloadablePlugins = new ArrayList<PluginInformation>();
         for (Iterator<PluginProxy> iter = pluginList.iterator(); iter.hasNext();) {
             PluginProxy pp = iter.next();
             if (supportReload(pp)) {
                 pp.preReloadCleanup();
-                plugins.add(pp.getPluginInformation());
+                reloadablePlugins.add(pp.getPluginInformation());
                 iter.remove();
             }
         }
-        if (plugins.isEmpty())
+        if (reloadablePlugins.isEmpty())
             return;
-        // safest to not have a to-be-reloaded map mode active
-        if(Main.map != null) {
+        // safest not to have a to-be-reloaded map mode active
+        if (Main.map != null) {
             Main.map.selectSelectTool(false);
         }
         //        try {
-
         //            List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
-
         //            monitor.beginTask(tr("Loading plugins ..."));
         //            monitor.subTask(tr("Checking plugin preconditions..."));
         //            Collection<PluginInformation> toLoad = preproccessPluginList(null, plugins);
 
-        ClassLoader cl = createClassReloader(plugins);
+        ClassLoader cl = createClassReloader(reloadablePlugins);
 
-        loadPluginsNoCheck(null, plugins, null, cl);
+        List<PluginProxy> nonReloadablePlugins = new ArrayList<PluginProxy>(pluginList);
+        loadPluginsNoCheck(null, reloadablePlugins, null, cl); // adds the plugins to pluginList
         for (PluginProxy plugin : pluginList) {
-            plugin.mapFrameInitialized(Main.map, Main.map);
+            if (!nonReloadablePlugins.contains(plugin)) { // only notify reloaded plugins
+                plugin.mapFrameInitialized(Main.map, Main.map);
+            }
         }
         //        PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
         //        } finally {
