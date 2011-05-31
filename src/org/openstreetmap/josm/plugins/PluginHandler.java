@@ -978,6 +978,7 @@ public class PluginHandler {
         return null;
     }
 
+    // FIXME: add mechanism to remove DowloadSections
     public static void addDownloadSelection(List<DownloadSelection> downloadSelections) {
         for (PluginProxy p : pluginList) {
             p.addDownloadSelection(downloadSelections);
@@ -1000,8 +1001,8 @@ public class PluginHandler {
 
                 { // "Constructor"
                     for (PluginProxy plugin : pluginList) {
-                        // Delay the factory and setting creation so we don't depend on static initializer magic(?)
-                        PreferenceSetting setting = new PluginPreferenceFactory(plugin).createPreferenceSetting();
+                        // Delay setting creation so we don't depend on static initializer magic(?)
+                        PreferenceSetting setting = plugin.getPreferenceSetting();
                         if (setting != null)
                             settings.add(setting);
                     }

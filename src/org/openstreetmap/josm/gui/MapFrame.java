@@ -281,6 +281,15 @@ public class MapFrame extends JPanel implements Destroyable, LayerChangeListener
         return button;
     }
 
+    // Hopefully this is enough. TODO: Should we call .validate()?
+    public void removeToggleDialog(final ToggleDialog dlg) {
+        if (dialogsPanel.initialized) {
+            dialogsPanel.remove(dlg);
+        }
+        allDialogs.remove(dlg);
+        toolBarToggle.remove(dlg);
+    }
+
     public void addMapMode(IconToggleButton b) {
         toolBarActions.add(b);
         toolGroup.add(b);
