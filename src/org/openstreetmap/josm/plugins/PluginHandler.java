@@ -55,7 +55,9 @@ import org.openstreetmap.josm.gui.JMultilineLabel;
 import org.openstreetmap.josm.gui.MapFrame;
 import org.openstreetmap.josm.gui.download.DownloadSelection;
 import org.openstreetmap.josm.gui.help.HelpUtil;
+import org.openstreetmap.josm.gui.preferences.PreferenceSetting;
 import org.openstreetmap.josm.gui.preferences.PreferenceSettingFactory;
+import org.openstreetmap.josm.gui.preferences.PreferenceTabbedPane;
 import org.openstreetmap.josm.gui.progress.NullProgressMonitor;
 import org.openstreetmap.josm.gui.progress.ProgressMonitor;
 import org.openstreetmap.josm.tools.CheckParameterUtil;
@@ -534,7 +536,7 @@ public class PluginHandler {
     // TODO: This does not check preconditions for the plugins, assuming they are fulfilled as the plugins are already loaded. This is of course not 100% correct.
     // TODO: add progressmonitor support
     // TODO: do we need to respect the loadearly/late flags?
-    // TODO: seems to be quick enough, but is it problematic to to in a worker thread?
+    // TODO: seems to be quick enough, but is it problematic to put in a worker thread?
     // TODO: use 'Plugin-Date' manifest value if defined to determine if plugin need reload
     /**
      * Reloads all loaded plugins implementing 'preReloadCleanup'
@@ -557,7 +559,9 @@ public class PluginHandler {
         if (plugins.isEmpty())
             return;
         // safest to not have a to-be-reloaded map mode active
-        Main.map.selectSelectTool(false);
+        if(Main.map != null) {
+            Main.map.selectSelectTool(false);
+        }
         //        try {
 
         //            List<PluginInformation> plugins = PluginHandler.buildListOfPluginsToLoad(null,monitor.createSubTaskMonitor(1, false));
@@ -979,10 +983,50 @@ public class PluginHandler {
         }
     }
 
-    public static void getPreferenceSetting(Collection<PreferenceSettingFactory> settings) {
-        for (PluginProxy plugin : pluginList) {
-            settings.add(new PluginPreferenceFactory(plugin));
+    // FIXME: Quick hack to control the preference dialog (The preferences system could use a refactoring IMO)
+    // Relies on internal behavior in at least PreferenceTabbedPane. Adding functionality there is probably better
+    // long-term.
+    //
+    // The hack fixes two issues (in reality they are the same issue):
+    // Before, PreferenceTabbedPane would keep a reference to all plugins in its PreferenceSettingFactory list,
+    // causing stray references to reloaded plugins.
+    // Secondary, the preferences dialog will now actually work for reloaded plugins.
+    private static class JointPluginPreferenceSettingsFactory implements PreferenceSettingFactory {
+        @Override
+        public PreferenceSetting createPreferenceSetting() {
+            return new PreferenceSetting() {
+                private List<PreferenceSetting> settings = new ArrayList<PreferenceSetting>();
+
+                { // "Constructor"
+                    for (PluginProxy plugin : pluginList) {
+                        // Delay the factory and setting creation so we don't depend on static initializer magic(?)
+                        PreferenceSetting setting = new PluginPreferenceFactory(plugin).createPreferenceSetting();
+                        if (setting != null)
+                            settings.add(setting);
+                    }
+                }
+
+                @Override
+                public boolean ok() {
+                    for (PreferenceSetting s : settings) {
+                        s.ok();
+                    }
+                    return false;
+                }
+
+                @Override
+                public void addGui(PreferenceTabbedPane gui) {
+                    for (PreferenceSetting s : settings) {
+                        s.addGui(gui);
+                    }
+                }
+            };
         }
+    }
+
+    // This is only called once from the static initializer in PreferenceTabbedPane
+    public static void getPreferenceSetting(Collection<PreferenceSettingFactory> settings) {
+        settings.add(new JointPluginPreferenceSettingsFactory());
     }
 
     /**
