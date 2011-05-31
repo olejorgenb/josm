@@ -509,7 +509,13 @@ public class PluginHandler {
             }
         };
         URL[] jarUrls = createJarURLs(plugins);
-        return new URLClassLoader(jarUrls, deceiving);
+        return new URLClassLoader(jarUrls, deceiving) {
+            // make it easier to identify the current class loader in heapdumps
+            public long time = System.currentTimeMillis();
+            @Override public String toString() {
+                return "Reloading CL";
+            }
+        };
     }
 
     // TODO: MANIFEST property instead? This is simpler for everyone though?
@@ -529,6 +535,7 @@ public class PluginHandler {
     // TODO: add progressmonitor support
     // TODO: do we need to respect the loadearly/late flags?
     // TODO: seems to be quick enough, but is it problematic to to in a worker thread?
+    // TODO: use 'Plugin-Date' manifest value if defined to determine if plugin need reload
     /**
      * Reloads all loaded plugins implementing 'preReloadCleanup'
      */
@@ -537,6 +544,7 @@ public class PluginHandler {
         //        if (monitor == null) {
         //            monitor = NullProgressMonitor.INSTANCE;
         //        }
+        //        loadLocallyAvailablePluginInformation(null); // can't be run from the gui thread
         List<PluginInformation> plugins = new ArrayList<PluginInformation>();
         for (Iterator<PluginProxy> iter = pluginList.iterator(); iter.hasNext();) {
             PluginProxy pp = iter.next();

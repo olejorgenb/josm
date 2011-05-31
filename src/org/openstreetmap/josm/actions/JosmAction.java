@@ -148,6 +148,13 @@ abstract public class JosmAction extends AbstractAction implements Destroyable {
         DataSet.addSelectionListener(selectionChangeAdapter);
         initEnabledState();
     }
+    protected void uninstallAdapters() {
+        if(layerChangeAdapter != null)
+            MapView.removeLayerChangeListener(layerChangeAdapter);
+        if(selectionChangeAdapter != null) {
+            DataSet.removeSelectionListener(selectionChangeAdapter);
+        }
+    }
 
     /**
      * Override in subclasses to init the enabled state of an action when it is

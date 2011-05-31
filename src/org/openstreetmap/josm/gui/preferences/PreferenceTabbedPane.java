@@ -279,6 +279,8 @@ public class PreferenceTabbedPane extends JTabbedPane implements MouseWheelListe
         settingsFactory.add(new RemoteControlPreference.Factory());
         settingsFactory.add(new ImageryPreference.Factory());
 
+        // FIXME: Can we really be sure that all plugins is loaded? This does only work because java are lazy with class loading and this class is referenced late...
+        // Possible to make PluginHandler create a wrapper factory
         PluginHandler.getPreferenceSetting(settingsFactory);
 
         // always the last: advanced tab
