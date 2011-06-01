@@ -1,0 +1,62 @@
+= Notes on dynamic loading and unloading of JOSM plugins =
+
+(written from somewhat limited knowledge of java technicalities and the JOSM code base :)
+
+It's possible to reload classes in java using class loader magic. The result is multiple classes sharing the same name. Which class you get depends on the class-loader used for look-up.
+`Class.forName("MyReloadedClass", true, classLoader1)` and `Class.forName("MyReloadedClass", true, reloadingCL)` will return different classes. Object instances from these will of course be incompatible.
+
+In JOSM, all plugins are currently loaded using a common class-loader at start-up. They are instantiated and more or less free to do anything classes in the core can do.
+
+== How to make a plugin reloadable/unloadable ==
+
+A typical plugin alters the state of the application by some of these:
+
+1. Add instances of `JosmAction`, `MapMode` and/or `ToggleDialog` to the `MapFrame`
+2. All the above typically register a shortcut
+3. Add a preference page to `PreferencesDialog`
+4. Add a `DowloadSelection`
+
+All these steps will leave references to instances of the plugin's classes different places in JOSM core. For reloading to work reliable all these should be clean up. Since plugins are very unrestricted, they must be trusted to do that them-self. Helper methods will be provided, obviously, and in most cases it shouldn't be to hard.
+
+Plugins implementing `public void preReloadCleanup()` in the Plugin-Class are considered to safe unload by JOSM. This method will be called before the plugin are unloaded.
+
+I have just written one plugin. It performs 1 (`MapMode`) and 2. To unload this plugin only calls to `Main.map.removeMapMode(modeInstance)` and `Main.unregisterActionShortcut(mode_instance)` was needed.
+
+To make sure all references have been squashed, a heap inspect tool can be used. Here is one method:
+
+Fire up josm, use the plugin for while. You should open the preferences (access the plugin's page, if it has one), use its shortcut's, and download some data. This should cover most places references might "leak" into the core. Then open a terminal window and do: (TODO: windows users)
+{{{
+jhat PID-OF-JOSM -histo:live | grep PACKAGENAME-OF-PLUGIN
+}}}
+The table header is: (well.. that probably depends on the java version)
+{{{
+num     #instances         #bytes  class name
+}}}
+
+If any of the plugin's classnames are listed more than once, something is wrong.
+
+Note: Enums might be referenced in the actual Class objects, and since I haven't managed to get rid of them yes, wont go away. It's probably not a problem.
+
+=== Find reference "leaks" ===
+
+If the above check failed, there are stray references. To find these [http://visualvm.java.net/  VisualVM] and [OQL http://visualvm.java.net/oqlhelp.html] might prove useful.
+
+http://blogs.oracle.com/sundararajan/entry/querying_java_heap_with_oql
+
+http://blogs.oracle.com/sundararajan/entry/permanent_generation_analysis_with_oql
+
+TODO: If this actually appears to be problem, this should be expanded on
+
+== Limitations ==
+
+- Does not re-read MANIFEST on reload. (this need to be be fixed)
+- Haven't done much testing with updated resources. Cached images etc.
+- Does not respect Plugin-Requires (if p1 depends on p2, no checks are made when p2 is reloaded. p1 will continue to use the old p2).
+  - As of 2011-06-01 two plugins in svn use this MANIFEST value.
+- Does not respect Plugin-Stage. (Can't see that the load code does either though)
+  - As of 2011-06-01 three plugins in svn uses a non-default value
+
+
+== Technical documentation ==
+http://tutorials.jenkov.com/java-reflection/dynamic-class-loading-reloading.html
+
