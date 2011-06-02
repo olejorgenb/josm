@@ -574,7 +574,7 @@ public class PluginHandler {
         loadPluginsNoCheck(null, reloadablePlugins, null, cl); // adds the plugins to pluginList
         for (PluginProxy plugin : pluginList) {
             if (!nonReloadablePlugins.contains(plugin)) { // only notify reloaded plugins
-                plugin.mapFrameInitialized(Main.map, Main.map);
+                plugin.mapFrameInitialized(null, Main.map);
             }
         }
         //        PluginHandler.notifyMapFrameChanged(Main.map, Main.map);
