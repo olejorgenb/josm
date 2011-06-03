@@ -26,12 +26,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -80,6 +82,7 @@ import org.openstreetmap.josm.gui.MapView;
 import org.openstreetmap.josm.gui.SideButton;
 import org.openstreetmap.josm.gui.dialogs.ToggleDialog;
 import org.openstreetmap.josm.gui.dialogs.properties.PresetListPanel.PresetHandler;
+import org.openstreetmap.josm.gui.dialogs.relation.DownloadRelationMemberTask;
 import org.openstreetmap.josm.gui.dialogs.relation.RelationEditor;
 import org.openstreetmap.josm.gui.layer.OsmDataLayer;
 import org.openstreetmap.josm.gui.tagging.TaggingPreset;
@@ -360,6 +363,8 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
                 ((MemberInfo) membershipData.getValueAt(row, 1)).role).setVisible(true);
     }
 
+    private static String lastAddKey = null;
+    private static String lastAddValue = null;
     /**
      * Open the add selection dialog and add a new key/value to the table (and
      * to the dataset, of course).
@@ -376,12 +381,18 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
         AutoCompletionManager autocomplete = Main.main.getEditLayer().data.getAutoCompletionManager();
         List<AutoCompletionListItem> keyList = autocomplete.getKeys();
 
+        AutoCompletionListItem itemToSelect = null; 
         // remove the object's tag keys from the list
         Iterator<AutoCompletionListItem> iter = keyList.iterator();
         while (iter.hasNext()) {
             AutoCompletionListItem item = iter.next();
+            if (item.getValue().equals(lastAddKey)) {
+                itemToSelect = item;
+            }
             for (int i = 0; i < propertyData.getRowCount(); ++i) {
                 if (item.getValue().equals(propertyData.getValueAt(i, 0))) {
+                    if (itemToSelect == item)
+                        itemToSelect = null;
                     iter.remove();
                     break;
                 }
@@ -400,6 +411,10 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
         final AutoCompletingComboBox values = new AutoCompletingComboBox();
         values.setEditable(true);
         p2.add(values, BorderLayout.CENTER);
+        if (itemToSelect != null) {
+            keys.setSelectedItem(itemToSelect);
+            values.setSelectedItem(lastAddValue);
+        }
 
         FocusAdapter focus = addFocusAdapter(-1, keys, values, autocomplete);
         // fire focus event in advance or otherwise the popup list will be too small at first
@@ -421,6 +436,8 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
         String value = values.getEditor().getItem().toString().trim();
         if (value.equals(""))
             return;
+        lastAddKey = key;
+        lastAddValue = value;
         Main.main.undoRedo.add(new ChangePropertyCommand(sel, key, value));
         btnAdd.requestFocusInWindow();
     }
@@ -605,6 +622,8 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
                     Relation relation = (Relation)membershipData.getValueAt(row, 0);
                     menu.add(new SelectRelationAction(relation, true));
                     menu.add(new SelectRelationAction(relation, false));
+                    menu.add(new SelectRelationMembersAction(relation));
+                    menu.add(new DownloadIncompleteMembersAction(relation));
                     menu.addSeparator();
                     menu.add(helpAction);
                     menu.show(membershipTable, p.x, p.y-3);
@@ -967,6 +986,7 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
                     new String[] {tr("Delete from relation"), tr("Cancel")});
             ed.setButtonIcons(new String[] {"dialogs/delete.png", "cancel.png"});
             ed.setContent(tr("Really delete selection from relation {0}?", cur.getDisplayName(DefaultNameFormatter.getInstance())));
+            ed.toggleEnable("delete_from_relation");
             ed.showDialog();
 
             if(ed.getValue() != 1)
@@ -1182,4 +1202,59 @@ public class PropertiesDialog extends ToggleDialog implements SelectionChangedLi
             }
         }
     }
+
+
+    /**
+     * Sets the current selection to the members of selected relation
+     *
+     */
+    class SelectRelationMembersAction extends AbstractAction {
+        Relation relation;
+        public SelectRelationMembersAction(Relation r) {
+            relation = r;
+            putValue(SHORT_DESCRIPTION,tr("Select the members of selected relation"));
+            putValue(SMALL_ICON, ImageProvider.get("selectall"));
+            putValue(NAME, tr("Select members"));
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            HashSet<OsmPrimitive> members = new HashSet<OsmPrimitive>();
+            members.addAll(relation.getMemberPrimitives());
+            Main.map.mapView.getEditLayer().data.setSelected(members);
+        }
+
+    }
+
+    /**
+     * Action for downloading incomplete members of selected relation
+     *
+     */
+    class DownloadIncompleteMembersAction extends AbstractAction {
+        Relation relation;
+        public DownloadIncompleteMembersAction(Relation r) {
+            relation = r;
+            putValue(SHORT_DESCRIPTION, tr("Download incomplete members of selected relations"));
+            putValue(SMALL_ICON, ImageProvider.get("dialogs/relation", "downloadincompleteselected"));
+            putValue(NAME, tr("Download incomplete members"));
+        }
+
+        public Set<OsmPrimitive> buildSetOfIncompleteMembers(Relation r) {
+            Set<OsmPrimitive> ret = new HashSet<OsmPrimitive>();
+            ret.addAll(r.getIncompleteMembers());
+            return ret;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (!relation.hasIncompleteMembers()) return;
+            ArrayList<Relation> rels = new ArrayList<Relation>();
+            rels.add(relation);
+            Main.worker.submit(new DownloadRelationMemberTask(
+                    rels,
+                    buildSetOfIncompleteMembers(relation),
+                    Main.map.mapView.getEditLayer()
+            ));
+        }
+    }
+
+
 }
